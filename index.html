@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>《法老的詛咒：圖坦卡門的數學迷宮》</title>
+    <!-- Google Fonts: Cinzel for headers, Noto Sans TC for Chinese content -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Dark Vignette Overlay for atmosphere -->
+    <div id="vignette-overlay"></div>
+
+    <!-- Fireworks Canvas for victory screens (positioned behind app panels) -->
+    <canvas id="fireworks-canvas" class="fireworks-canvas-el"></canvas>
+
+    <div class="app-container">
+        <!-- 1. ENTRANCE SCREEN -->
+        <div id="entrance-screen" class="screen">
+            <div class="title-container">
+                <h1 class="game-title animate-title">法老的詛咒：圖坦卡門的數學迷宮</h1>
+                <div class="game-subtitle animate-title">國小數學第二階段(中年級)能力指標題目總匯</div>
+            </div>
+            
+            <div class="scroll-container scroll-bg">
+                <h2 class="section-title">【考古冒險啟程】</h2>
+                <p class="story-text">
+                    「轟隆隆——！密室大門突然落下，你們被困在黑暗 of the 帝王谷深處！」<br><br>
+                    你們是「考古調查隊」的冒險隊員。在挖掘圖坦卡門陵墓時，不小心觸動了沉睡三千年的古代機關，整個地下墓室開始崩塌，並釋放了「法老的詛咒」！無數木乃伊與守護聖獸阿努比斯正從陰影中甦醒。<br><br>
+                    此時，一隻木雕化身的「聖甲蟲小精靈」現身，牠願意帶領你們尋找唯一的生路。但陵墓內充滿了古埃及祭司設下的數學謎題，你們必須用「數學大腦」連破三關：<br>
+                    <strong>1. 阿努比斯的黃金天秤</strong>：平衡未知數與祭品。<br>
+                    <strong>2. 甲蟲壁畫的分數迷宮</strong>：破解單位分數的規律。<br>
+                    <strong>3. 人面獅身的最後提問</strong>：計算金字塔底面周長及表面積，開啟傳送陣！<br><br>
+                    立刻整裝出發，用數學解開法老的詛咒，逃出圖坦卡門的地下陵墓！
+                </p>
+            </div>
+
+            <div class="setup-container">
+                <div class="input-group">
+                    <label for="player-name">調查隊冒險隊員姓名 <span class="required-star">*</span></label>
+                    <input type="text" id="player-name" placeholder="輸入你的姓名以解除密室門禁..." autocomplete="off">
+                </div>
+
+                <div class="companion-selector">
+                    <h3>選擇你的冒險夥伴</h3>
+                    <div class="companion-options">
+                        <div class="companion-card active" data-id="scarab">
+                            <img class="companion-icon-img" src="assets/images/scarab_avatar.png" alt="聖甲蟲">
+                            <div class="companion-info">
+                                <span class="companion-name">聖甲蟲</span>
+                                <span class="companion-desc">古埃及神聖指引者。能為你分析局勢、提供溫和指點。</span>
+                            </div>
+                        </div>
+                        <div class="companion-card" data-id="bastet">
+                            <img class="companion-icon-img" src="assets/images/bastet_avatar.png" alt="巴斯特貓神">
+                            <div class="companion-info">
+                                <span class="companion-name">巴斯特貓神</span>
+                                <span class="companion-desc">家庭與喜樂之神。性格活潑靈巧，時常發出喵喵的打氣聲。</span>
+                            </div>
+                        </div>
+                        <div class="companion-card" data-id="anubis">
+                            <img class="companion-icon-img" src="assets/images/anubis_avatar.png" alt="阿努比斯">
+                            <div class="companion-info">
+                                <span class="companion-name">阿努比斯</span>
+                                <span class="companion-desc">胡狼神，死者守護者。嚴厲莊重，指引靈魂通往真理殿堂。</span>
+                            </div>
+                        </div>
+                        <div class="companion-card" data-id="sphinx">
+                            <img class="companion-icon-img" src="assets/images/sphinx_avatar.png" alt="人面獅身">
+                            <div class="companion-info">
+                                <span class="companion-name">人面獅身</span>
+                                <span class="companion-desc">金字塔守護者。雄偉威嚴，出題刁鑽，但對智者充滿敬意。</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mode-selector">
+                    <h3>選擇法老的試煉 (難度模式)</h3>
+                    <div class="mode-options">
+                        <div class="mode-card" data-mode="mask">
+                            <img src="assets/images/mask_trial.png" alt="法老的黃金面具" class="mode-icon-img">
+                            <span class="mode-name">法老的黃金面具</span>
+                            <span class="mode-desc">50題隨機抽選 25 題<br>🔥 3 個火把生命</span>
+                        </div>
+                        <div class="mode-card" data-mode="dagger">
+                            <img src="assets/images/dagger_trial.png" alt="法老的隕鐵匕首" class="mode-icon-img">
+                            <span class="mode-name">法老的隕鐵匕首</span>
+                            <span class="mode-desc">50題隨機抽選 40 題<br>🔥 7 個火把生命</span>
+                        </div>
+                        <div class="mode-card active" data-mode="amulet">
+                            <img src="assets/images/amulet_trial.png" alt="法老的心臟聖甲蟲護身符" class="mode-icon-img">
+                            <span class="mode-name">法老的心臟聖甲蟲護身符</span>
+                            <span class="mode-desc">完整 50 題大考驗<br>🔥 10 個火把生命</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="start-game-btn" class="egypt-btn">進入金字塔</button>
+            </div>
+        </div>
+
+        <!-- 2. GAME PLAY SCREEN -->
+        <div id="game-screen" class="screen hidden">
+            <!-- HUD HEADER -->
+            <div class="game-hud">
+                <div class="hud-item player-profile">
+                    <span class="hud-label">冒險隊員:</span>
+                    <span id="hud-player-name" class="hud-value">-</span>
+                </div>
+                
+                <div class="hud-item hp-display">
+                    <span class="hud-label">剩餘火把:</span>
+                    <span id="hud-hp-hearts" class="hud-value">-</span>
+                </div>
+
+                <div class="hud-item score-display">
+                    <span class="hud-label">得分:</span>
+                    <span id="hud-score" class="hud-value gold-text">0 / 100</span>
+                </div>
+            </div>
+
+            <!-- COMPANION DIALOGUE PANEL -->
+            <div class="companion-panel">
+                <div class="companion-avatar" id="active-companion-avatar">
+                    <img src="assets/images/scarab_avatar.png" alt="聖甲蟲" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">
+                </div>
+                <div class="companion-bubble">
+                    <div class="companion-title" id="active-companion-title">聖甲蟲</div>
+                    <div class="companion-text" id="companion-dialogue">跟我來，冒險隊員！陵墓的數學機關已經啟動，請用智慧解開它們！</div>
+                </div>
+            </div>
+
+            <div class="quiz-container">
+                <div class="indicator-header">
+                    <span id="current-stage-title" class="indicator-text" style="font-weight: 700; color: var(--gold-bright);">關卡 1/3：阿努比斯的黃金天秤</span>
+                    <span id="question-progress" class="question-number">進度: 1 / 50</span>
+                </div>
+
+                <div class="question-card">
+                    <p id="question-text" class="question-text">
+                        正在讀取法老密碼...
+                    </p>
+
+                    <!-- Question Specific Media Area -->
+                    <div id="question-media-container" class="question-media hidden">
+                        <img id="question-img" src="" alt="題目附圖">
+                    </div>
+
+                    <!-- Custom HTML Tables for Statistics and Magic Mana Questions -->
+                    <div id="question-table-container" class="question-table hidden">
+                        <!-- Filled dynamically -->
+                    </div>
+                </div>
+
+                <!-- OPTIONS CONTAINER -->
+                <div class="options-grid">
+                    <button class="option-btn" data-letter="A"><span class="opt-indicator">A</span> <span class="opt-text">-</span></button>
+                    <button class="option-btn" data-letter="B"><span class="opt-indicator">B</span> <span class="opt-text">-</span></button>
+                    <button class="option-btn" data-letter="C"><span class="opt-indicator">C</span> <span class="opt-text">-</span></button>
+                    <button class="option-btn" data-letter="D"><span class="opt-indicator">D</span> <span class="opt-text">-</span></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. RESULT SCREEN (GAME OVER / VICTORY) -->
+        <div id="result-screen" class="screen hidden">
+            <div class="result-box scroll-bg animate-result">
+                <h1 id="result-title" class="result-title">法老的詛咒降臨！</h1>
+                <div class="result-icon-main" id="result-emoji">
+                    <span>💀</span>
+                </div>
+                
+                <div class="result-stats">
+                    <div class="stat-row">
+                        <span>調查隊冒險隊員：</span>
+                        <span id="res-player-name" class="gold-text">-</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>冒險夥伴：</span>
+                        <span id="res-companion" class="gold-text">-</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>最終得分：</span>
+                        <span id="res-score" class="gold-text">0 / 100</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>回答題數：</span>
+                        <span id="res-progress" class="gold-text">0 / 50</span>
+                    </div>
+                </div>
+
+                <div class="companion-evaluation">
+                    <div class="companion-avatar" id="res-companion-avatar">
+                        <img src="assets/images/scarab_avatar.png" alt="聖甲蟲" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">
+                    </div>
+                    <div class="eval-content">
+                        <div class="companion-title" id="res-companion-title">聖甲蟲</div>
+                        <p id="res-companion-text" class="story-text">火把全熄滅了，密室徹底鎖死。難道我們注定成為木乃伊的同伴嗎？</p>
+                    </div>
+                </div>
+
+                <button id="restart-btn" class="egypt-btn">重新探索金字塔</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load database first, then game logic -->
+    <script src="questions.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

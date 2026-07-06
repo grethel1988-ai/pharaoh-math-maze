@@ -1,0 +1,837 @@
+/* ==========================================
+   Egypt Theme - Game Style Sheet
+   ========================================== */
+
+/* Global Variables */
+:root {
+    --gold: #e5a93c;
+    --gold-bright: #ffd700;
+    --gold-glow: rgba(229, 169, 60, 0.4);
+    --gold-dark: #aa7c28;
+    --bg-dark: #0a0806;
+    --bg-panel: rgba(22, 18, 14, 0.85);
+    --bg-panel-light: rgba(38, 30, 24, 0.9);
+    --stone-border: #42362b;
+    --text-light: #f5eedc;
+    --text-dark: #1f1712;
+    --red: #d32f2f;
+    --red-glow: rgba(211, 47, 47, 0.5);
+    --green: #388e3c;
+    --green-glow: rgba(56, 142, 60, 0.5);
+    --blue: #1976d2;
+    --vignette-opacity: 0.15; /* Soft static border vignette since torch decay is disabled */
+}
+
+/* Reset and Core Layout */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    font-family: 'Noto Sans TC', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+    position: relative;
+    /* Custom background image with dark overlay for readability */
+    background-image: 
+        linear-gradient(rgba(10, 8, 6, 0.65), rgba(10, 8, 6, 0.65)),
+        url('assets/images/background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+/* Vignette Overlay for atmosphere */
+#vignette-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 999;
+    background: radial-gradient(circle, transparent 30%, rgba(0, 0, 0, var(--vignette-opacity)) 80%);
+}
+
+/* Fireworks Canvas Element positioned behind game UI panels */
+.fireworks-canvas-el {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 5; /* Render behind the .app-container which has z-index: 10 */
+    display: none;
+}
+
+/* App Container */
+.app-container {
+    width: 100%;
+    max-width: 960px;
+    padding: 20px;
+    position: relative;
+    z-index: 10;
+}
+
+/* Screen Transitions */
+.screen {
+    opacity: 1;
+    transition: opacity 0.5s ease;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ==========================================
+   Typography & Themes
+   ========================================== */
+
+h1, h2, h3, .game-title, .section-title, .companion-name, .hud-label, .opt-indicator {
+    font-family: 'Cinzel', 'Noto Sans TC', serif;
+    letter-spacing: 1px;
+}
+
+.gold-text {
+    color: var(--gold-bright);
+    text-shadow: 0 0 10px var(--gold-glow);
+}
+
+/* Egypt Button */
+.egypt-btn {
+    background: linear-gradient(135deg, #3d2f23 0%, #1e150f 100%);
+    border: 2px solid var(--gold);
+    color: var(--gold-bright);
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), inset 0 1px 3px rgba(255, 255, 255, 0.1);
+    text-transform: uppercase;
+    display: inline-block;
+    text-align: center;
+}
+
+.egypt-btn:hover {
+    background: linear-gradient(135deg, #534030 0%, #2e2118 100%);
+    border-color: var(--gold-bright);
+    box-shadow: 0 0 15px var(--gold-glow), 0 6px 20px rgba(0, 0, 0, 0.6);
+    transform: translateY(-2px);
+}
+
+.egypt-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 0 5px var(--gold-glow);
+}
+
+.egypt-btn.btn-sm {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+}
+
+/* Papyrus Scroll Style Panel */
+.scroll-bg {
+    background-color: #e6dfc8;
+    background-image: 
+        radial-gradient(rgba(0,0,0,0.02) 25%, transparent 26%),
+        linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px);
+    background-size: 20px 20px, 100% 100%;
+    color: var(--text-dark);
+    border: 15px solid #dcd1af;
+    border-image: repeating-linear-gradient(45deg, #c7ba96, #c7ba96 10px, #a39572 10px, #a39572 20px) 15;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    position: relative;
+}
+
+/* ==========================================
+   Entrance Screen
+   ========================================== */
+
+.title-container {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.game-title {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--gold-bright);
+    margin-bottom: 8px;
+    text-shadow: 0 0 15px rgba(229, 169, 60, 0.6), 0 0 30px rgba(229, 169, 60, 0.3);
+}
+
+.game-subtitle {
+    font-size: 1.1rem;
+    color: #c7b09c;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-shadow: 0 0 8px rgba(0,0,0,0.8);
+}
+
+.scroll-container {
+    max-height: 250px;
+    overflow-y: auto;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 4px;
+}
+
+/* Custom Scrollbar for scroll content */
+.scroll-container::-webkit-scrollbar {
+    width: 8px;
+}
+.scroll-container::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+}
+.scroll-container::-webkit-scrollbar-thumb {
+    background: var(--gold-dark);
+    border-radius: 4px;
+}
+
+.story-text {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    text-align: justify;
+}
+
+.setup-container {
+    background: var(--bg-panel);
+    border: 2px solid var(--stone-border);
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.5);
+    width: 100%;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 25px;
+}
+
+.input-group label {
+    font-size: 1.1rem;
+    color: var(--gold);
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.required-star {
+    color: var(--red);
+    font-weight: bold;
+    margin-left: 2px;
+}
+
+.input-group input {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--stone-border);
+    color: var(--text-light);
+    padding: 12px 15px;
+    font-size: 1.05rem;
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 10px var(--gold-glow);
+}
+
+.companion-selector h3 {
+    font-size: 1.1rem;
+    color: var(--gold);
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.companion-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+@media (max-width: 600px) {
+    .companion-options {
+        grid-template-columns: 1fr;
+    }
+}
+
+.companion-card {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--stone-border);
+    border-radius: 6px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.companion-card:hover {
+    border-color: var(--gold-dark);
+    background: rgba(229, 169, 60, 0.05);
+}
+
+.companion-card.active {
+    border-color: var(--gold);
+    background: rgba(229, 169, 60, 0.12);
+    box-shadow: 0 0 12px var(--gold-glow);
+}
+
+.companion-icon-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.8px solid var(--gold);
+    box-shadow: 0 0 8px var(--gold-glow);
+    min-width: 50px;
+}
+
+.companion-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.companion-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--gold-bright);
+    margin-bottom: 4px;
+}
+
+.companion-desc {
+    font-size: 0.75rem;
+    color: #b0a090;
+    line-height: 1.3;
+}
+
+/* Trial Mode Selector Styling */
+.mode-selector {
+    margin-top: 25px;
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.mode-selector h3 {
+    font-size: 1.1rem;
+    color: var(--gold);
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.mode-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px; /* compact gap to prevent grid cell stretch */
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .mode-options {
+        grid-template-columns: 1fr;
+    }
+}
+
+.mode-card {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--stone-border);
+    border-radius: 6px;
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    justify-content: space-between;
+    min-height: 220px; /* Standardize card heights slightly taller for larger elements */
+    min-width: 0; /* Crucial: allows grid items to shrink inside parents */
+    overflow: hidden;
+}
+
+.mode-card:hover {
+    border-color: var(--gold-dark);
+    background: rgba(229, 169, 60, 0.05);
+}
+
+.mode-card.active {
+    border-color: var(--gold);
+    background: rgba(229, 169, 60, 0.12);
+    box-shadow: 0 0 12px var(--gold-glow);
+}
+
+.mode-icon-img {
+    width: 95px; /* Scaled up from 75px for better visibility */
+    height: 95px;
+    object-fit: contain; /* Maintain full shape without cropping */
+    filter: drop-shadow(0 0 5px rgba(229, 169, 60, 0.35));
+    transition: transform 0.3s ease;
+    margin-bottom: 5px;
+    background-color: transparent;
+}
+
+.mode-card:hover .mode-icon-img {
+    transform: scale(1.06);
+    filter: drop-shadow(0 0 8px var(--gold-glow));
+}
+
+.mode-name {
+    font-size: 1.05rem; /* Scaled up from 0.9rem */
+    font-weight: 700;
+    color: var(--gold-bright);
+    line-height: 1.25;
+}
+
+.mode-desc {
+    font-size: 0.8rem; /* Scaled up from 0.7rem */
+    color: #b0a090;
+    line-height: 1.4;
+}
+
+.setup-container button {
+    width: 100%;
+}
+
+/* ==========================================
+   Game Screen HUD
+   ========================================== */
+
+.game-hud {
+    background: var(--bg-panel);
+    border: 1.5px solid var(--stone-border);
+    border-radius: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    gap: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.hud-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+}
+
+.hud-label {
+    color: #b0a090;
+    font-weight: 500;
+}
+
+.hud-value {
+    font-weight: 700;
+}
+
+/* Companion Bubble Reacting */
+.companion-panel {
+    background: var(--bg-panel);
+    border: 1.5px solid var(--stone-border);
+    border-radius: 8px;
+    padding: 15px 20px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.companion-avatar {
+    width: 60px;
+    height: 60px;
+    background: rgba(0,0,0,0.4);
+    border: 2.2px solid var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    overflow: hidden; /* Clips the child image cleanly */
+    min-width: 60px;
+}
+
+.companion-bubble {
+    flex-grow: 1;
+}
+
+.companion-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--gold-bright);
+    margin-bottom: 5px;
+}
+
+.companion-text {
+    font-size: 0.85rem;
+    color: #e0d0c0;
+    line-height: 1.4;
+    font-style: italic;
+}
+
+/* ==========================================
+   Quiz Container & Panels
+   ========================================== */
+
+.quiz-container {
+    background: var(--bg-panel-light);
+    border: 2px solid var(--gold);
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    position: relative;
+}
+
+.indicator-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--gold-bright);
+    border-bottom: 1px solid var(--stone-border);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.indicator-text {
+    font-weight: 500;
+}
+
+.question-number {
+    font-weight: 700;
+}
+
+.question-card {
+    margin-bottom: 25px;
+    position: relative;
+    min-height: 80px;
+}
+
+.question-text {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    white-space: pre-line;
+}
+
+/* Dynamic CSS Tables for Q39/Q40 */
+.question-table {
+    margin: 20px 0;
+    overflow-x: auto;
+}
+
+.question-table table {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    border: 2px solid var(--gold);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.question-table th, .question-table td {
+    padding: 10px 15px;
+    text-align: center;
+    border: 1px solid var(--stone-border);
+}
+
+.question-table th {
+    background-color: #2b2016;
+    color: var(--gold-bright);
+    font-weight: 700;
+}
+
+.question-table tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* Question media files */
+.question-media {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.question-media img {
+    max-width: 100%;
+    max-height: 250px;
+    border: 2px solid var(--stone-border);
+    border-radius: 4px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+/* Option Buttons Grid */
+.options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+@media (max-width: 600px) {
+    .options-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.option-btn {
+    background: #1c1611;
+    border: 1px solid var(--stone-border);
+    color: var(--text-light);
+    border-radius: 6px;
+    padding: 18px 20px;
+    text-align: left;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.25s ease;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+}
+
+.option-btn:hover {
+    background: #2b2118;
+    border-color: var(--gold);
+    box-shadow: 0 0 10px var(--gold-glow);
+    transform: translateX(3px);
+}
+
+.opt-indicator {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--stone-border);
+    color: var(--gold);
+    font-weight: 700;
+    min-width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    transition: all 0.25s;
+}
+
+.option-btn:hover .opt-indicator {
+    border-color: var(--gold);
+    color: var(--gold-bright);
+    background: rgba(229, 169, 60, 0.1);
+}
+
+/* Option Feedback States */
+.option-btn.correct {
+    background: #1b4d22 !important;
+    border-color: var(--green) !important;
+    color: #e8f5e9;
+    box-shadow: 0 0 15px var(--green-glow) !important;
+}
+
+.option-btn.correct .opt-indicator {
+    border-color: var(--green);
+    color: #81c784;
+}
+
+.option-btn.incorrect {
+    background: #b71c1c !important;
+    border-color: var(--red) !important;
+    color: #ffebee;
+    box-shadow: 0 0 15px var(--red-glow) !important;
+    animation: shake 0.4s ease-in-out;
+}
+
+.option-btn.incorrect .opt-indicator {
+    border-color: var(--red);
+    color: #e57373;
+}
+
+.option-btn.faded {
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+/* ==========================================
+   Result / End Screen
+   ========================================== */
+
+.result-box {
+    padding: 40px;
+    border-radius: 8px;
+    max-width: 580px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.result-title {
+    font-size: 2.2rem;
+    color: var(--red);
+    text-shadow: 0 0 10px var(--red-glow);
+    margin-bottom: 20px;
+}
+
+/* Set title to dark green on victory */
+.result-box.victory .result-title {
+    color: #1b5e20;
+    text-shadow: 0 0 8px rgba(27, 94, 32, 0.2);
+}
+
+/* Set summary numbers to dark green on both victory and defeat */
+.result-stats .gold-text {
+    color: #1b5e20 !important;
+    text-shadow: none !important;
+    font-weight: 700;
+}
+
+.result-icon-main {
+    margin-bottom: 25px;
+    min-height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Flying anim for the victory Horus Eye */
+.victory-horus-eye {
+    width: 140px;
+    height: 140px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 18px rgba(229, 169, 60, 0.75));
+    animation: horus-float 3s infinite ease-in-out;
+}
+
+/* Standard float for defeat skull */
+.result-icon-main span {
+    font-size: 4.5rem;
+    animation: float 2.5s infinite ease-in-out;
+    display: inline-block;
+}
+
+.result-stats {
+    background: rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1rem;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.stat-row:last-child {
+    border-bottom: none;
+}
+
+.companion-evaluation {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.companion-evaluation .companion-avatar {
+    border-color: var(--text-dark);
+}
+
+.companion-evaluation .companion-title {
+    color: var(--text-dark);
+}
+
+.eval-content {
+    flex-grow: 1;
+}
+
+#restart-btn {
+    width: 100%;
+}
+
+/* ==========================================
+   Animations & Keyframes
+   ========================================== */
+
+/* Shaking animation on wrong answer */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+}
+
+/* Floating animation for result emojis */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+/* Horus Eye floating and glowing animation */
+@keyframes horus-float {
+    0% { 
+        transform: translateY(0) scale(1);
+        filter: drop-shadow(0 0 15px rgba(229, 169, 60, 0.6));
+    }
+    50% { 
+        transform: translateY(-12px) scale(1.04);
+        filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.95));
+    }
+    100% { 
+        transform: translateY(0) scale(1);
+        filter: drop-shadow(0 0 15px rgba(229, 169, 60, 0.6));
+    }
+}
+
+/* Header fade in animation */
+.animate-title {
+    animation: fadeInDown 1s both;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-result {
+    animation: zoomIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

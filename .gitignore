@@ -1,0 +1,24 @@
+# OS Files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Python temp files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Temporary logs
+*.log
