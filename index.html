@@ -26,7 +26,7 @@
             <div class="scroll-container scroll-bg">
                 <h2 class="section-title">【考古冒險啟程】</h2>
                 <p class="story-text">
-                    「轟隆隆——！密室大門突然落下，你們被困在黑暗 of the 帝王谷深處！」<br><br>
+                    「轟隆隆——！密室大門突然落下，你們被困在黑暗的帝王谷深處！」<br><br>
                     你們是「考古調查隊」的冒險隊員。在挖掘圖坦卡門陵墓時，不小心觸動了沉睡三千年的古代機關，整個地下墓室開始崩塌，並釋放了「法老的詛咒」！無數木乃伊與守護聖獸阿努比斯正從陰影中甦醒。<br><br>
                     此時，一隻木雕化身的「聖甲蟲小精靈」現身，牠願意帶領你們尋找唯一的生路。但陵墓內充滿了古埃及祭司設下的數學謎題，你們必須用「數學大腦」連破三關：<br>
                     <strong>1. 阿努比斯的黃金天秤</strong>：平衡未知數與祭品。<br>
@@ -38,11 +38,23 @@
 
             <div class="setup-container">
                 <div class="input-group">
-                    <label for="player-name">調查隊冒險隊員姓名 <span class="required-star">*</span></label>
+                    <label for="player-name">調查隊員姓名 <span class="required-star">*</span></label>
                     <input type="text" id="player-name" placeholder="輸入你的姓名以解除密室門禁..." autocomplete="off">
                 </div>
 
-                <div class="companion-selector">
+                <button id="to-mode-screen-btn" class="egypt-btn">下一步：選擇夥伴與試煉</button>
+            </div>
+        </div>
+
+        <!-- 1.5. DIFFICULTY SELECTION SCREEN -->
+        <div id="mode-screen" class="screen hidden">
+            <div class="title-container">
+                <h1 class="game-title animate-title">法老的試煉</h1>
+                <div class="game-subtitle animate-title">請選擇此行所攜帶的冒險夥伴、試煉難度與火把數</div>
+            </div>
+
+            <div class="setup-container">
+                <div class="companion-selector" style="margin-bottom: 20px;">
                     <h3>選擇你的冒險夥伴</h3>
                     <div class="companion-options">
                         <div class="companion-card active" data-id="scarab">
@@ -76,7 +88,7 @@
                     </div>
                 </div>
 
-                <div class="mode-selector">
+                <div class="mode-selector" style="margin-top: 0; margin-bottom: 20px;">
                     <h3>選擇法老的試煉 (難度模式)</h3>
                     <div class="mode-options">
                         <div class="mode-card" data-mode="mask">
@@ -97,7 +109,10 @@
                     </div>
                 </div>
 
-                <button id="start-game-btn" class="egypt-btn">進入金字塔</button>
+                <div class="screen-btn-row">
+                    <button id="back-to-entrance-btn" class="egypt-btn btn-secondary">回上一步</button>
+                    <button id="start-game-btn" class="egypt-btn">進入金字塔</button>
+                </div>
             </div>
         </div>
 

@@ -445,7 +445,8 @@ let gameState = {
     score: 0,
     hp: MAX_HP, 
     questions: [], // shuffled questions array
-    isGameOver: false
+    isGameOver: false,
+    godMode: false
 };
 
 // Helper: Shuffle Array
@@ -475,8 +476,8 @@ function getStage(index) {
     }
 }
 
-// Initialize and Start Game
-function initGame() {
+// Navigate to Mode Selection Screen (validates name)
+function goToModeScreen() {
     const nameInput = document.getElementById("player-name").value.trim();
     
     if (!nameInput) {
@@ -486,7 +487,13 @@ function initGame() {
     }
     
     gameState.playerName = nameInput;
-    
+
+    showScreen("mode-screen");
+    Synth.playCoin();
+}
+
+// Initialize and Start Game
+function initGame() {
     const activeCompanionCard = document.querySelector(".companion-card.active");
     gameState.companionId = activeCompanionCard ? activeCompanionCard.dataset.id : "scarab";
 
@@ -509,6 +516,7 @@ function initGame() {
     gameState.score = 0;
     gameState.hp = gameState.maxHp;
     gameState.isGameOver = false;
+    gameState.godMode = false; // Reset godMode on game start
 
     // Load and shuffle questions based on mode proportion
     let stage1Pool = QUESTIONS_DATABASE.slice(0, 17);
@@ -563,7 +571,7 @@ function updateHUD() {
     hpContainer.textContent = "🔥".repeat(gameState.hp) + "⚫".repeat(gameState.maxHp - gameState.hp);
 
     // Score and Progress
-    document.getElementById("hud-score").textContent = `${Math.round(gameState.score)} / 100`;
+    document.getElementById("hud-score").textContent = `${Math.min(100, Math.round(gameState.score))} / 100`;
     document.getElementById("question-progress").textContent = `進度: ${gameState.currentQuestionIndex + 1} / ${gameState.totalQuestions}`;
 }
 
@@ -578,6 +586,12 @@ function updateCompanionAvatar(avatar, name) {
     
     const titleDiv = document.getElementById("active-companion-title");
     titleDiv.textContent = name;
+}
+
+// Helper to format fraction notations (X/Y) as vertical fractions
+function formatFractions(text) {
+    if (!text) return "";
+    return text.replace(/(\d+)\/(\d+)/g, '<span class="fraction"><span class="numerator">$1</span><span class="denominator">$2</span></span>');
 }
 
 // Display Next Question
@@ -606,7 +620,7 @@ function loadQuestion() {
     }
 
     // Set question text
-    document.getElementById("question-text").textContent = `${qIndex + 1}. ${q.text}`;
+    document.getElementById("question-text").innerHTML = formatFractions(q.text);
 
     // Handle Diagrams / Media
     const mediaContainer = document.getElementById("question-media-container");
@@ -705,7 +719,7 @@ function loadQuestion() {
         indicator.textContent = String.fromCharCode(65 + idx); 
         
         const optTextSpan = btn.querySelector(".opt-text");
-        optTextSpan.textContent = optionData.text;
+        optTextSpan.innerHTML = formatFractions(optionData.text);
 
         btn.dataset.originalLetter = optionData.letter;
     });
@@ -713,6 +727,7 @@ function loadQuestion() {
 
 // Process Option Selection
 function handleOptionClick(btn) {
+    if (btn.disabled) return;
     const optionButtons = document.querySelectorAll(".option-btn");
     optionButtons.forEach(b => b.disabled = true);
 
@@ -728,7 +743,7 @@ function handleOptionClick(btn) {
         
         // Calculate points based on the trial question count
         const questionValue = 100 / gameState.totalQuestions;
-        gameState.score += questionValue; 
+        gameState.score = Math.min(100, gameState.score + questionValue); 
 
         setCompanionQuote(COMPANIONS[gameState.companionId].quotes.correct);
 
@@ -738,7 +753,11 @@ function handleOptionClick(btn) {
     } else {
         Synth.playIncorrect();
         btn.classList.add("incorrect");
-        gameState.hp--; 
+        if (!gameState.godMode) {
+            gameState.hp--;
+        } else {
+            showDebugNotification("無敵模式：免扣火把！");
+        }
         
         // Warning when low on torches (HP <= 40% of max HP)
         if (gameState.hp <= gameState.maxHp * 0.4) {
@@ -807,7 +826,7 @@ function endGame(isVictory, reason) {
     // Stats filling
     document.getElementById("res-player-name").textContent = gameState.playerName;
     document.getElementById("res-companion").textContent = comp.name;
-    document.getElementById("res-score").textContent = `${Math.round(gameState.score)} / 100 分`;
+    document.getElementById("res-score").textContent = `${Math.min(100, Math.round(gameState.score))} / 100 分`;
     document.getElementById("res-progress").textContent = `${Math.min(gameState.totalQuestions, gameState.currentQuestionIndex)} / ${gameState.totalQuestions} 題`;
 
     showScreen("result-screen");
@@ -823,6 +842,110 @@ function showScreen(screenId) {
             s.classList.add("hidden");
         }
     });
+}
+
+// ==========================================
+// Developer Debug Shortcuts & Notifications
+// ==========================================
+function showDebugNotification(text) {
+    console.log(text);
+    let toast = document.getElementById("debug-toast");
+    if (!toast) {
+        toast = document.createElement("div");
+        toast.id = "debug-toast";
+        toast.style.position = "fixed";
+        toast.style.bottom = "20px";
+        toast.style.left = "50%";
+        toast.style.transform = "translateX(-50%)";
+        toast.style.backgroundColor = "rgba(229, 169, 60, 0.95)";
+        toast.style.color = "#0a0806";
+        toast.style.padding = "10px 20px";
+        toast.style.borderRadius = "4px";
+        toast.style.fontFamily = "sans-serif";
+        toast.style.fontWeight = "bold";
+        toast.style.zIndex = "9999";
+        toast.style.boxShadow = "0 0 15px rgba(255, 215, 0, 0.6)";
+        toast.style.pointerEvents = "none";
+        toast.style.transition = "opacity 0.3s";
+        document.body.appendChild(toast);
+    }
+    toast.textContent = text;
+    toast.style.opacity = "1";
+    if (toast.timeoutId) clearTimeout(toast.timeoutId);
+    toast.timeoutId = setTimeout(() => {
+        toast.style.opacity = "0";
+    }, 1500);
+}
+
+function debugCorrectAnswer() {
+    if (gameState.isGameOver || !gameState.playerName || !gameState.questions || !gameState.questions.length) return;
+    const qIndex = gameState.currentQuestionIndex;
+    const q = gameState.questions[qIndex];
+    const correctAnswer = q.answer;
+    const optionButtons = document.querySelectorAll(".option-btn");
+    let targetBtn = null;
+    optionButtons.forEach(btn => {
+        if (btn.dataset.originalLetter === correctAnswer) {
+            targetBtn = btn;
+        }
+    });
+    if (targetBtn) {
+        showDebugNotification("F2: 自動選對！");
+        handleOptionClick(targetBtn);
+    }
+}
+
+function toggleGodMode() {
+    if (gameState.isGameOver || !gameState.playerName) return;
+    gameState.godMode = !gameState.godMode;
+    showDebugNotification("F3: 無敵模式 " + (gameState.godMode ? "開啟 🔥" : "關閉 ❌"));
+}
+
+function debugInstantVictory() {
+    if (gameState.isGameOver || !gameState.playerName) return;
+    showDebugNotification("F4: 瞬間通關！");
+    gameState.score = 100;
+    gameState.currentQuestionIndex = gameState.totalQuestions;
+    endGame(true, "victory");
+}
+
+function debugJumpToQuestion() {
+    if (gameState.isGameOver || !gameState.playerName || !gameState.questions || !gameState.questions.length) {
+        alert("請先開始遊戲再使用跳題功能！");
+        return;
+    }
+    const maxQ = gameState.totalQuestions;
+    const input = prompt(`請輸入要跳轉的當前進度題號 (1 - ${maxQ})，或輸入 # 加「原資料庫題號」（例如 #39）跳至特定題目：`);
+    if (input === null) return;
+    
+    const trimmed = input.trim();
+    if (trimmed.startsWith("#")) {
+        const origNum = parseInt(trimmed.substring(1), 10);
+        if (isNaN(origNum) || origNum < 1 || origNum > QUESTIONS_DATABASE.length) {
+            alert(`請輸入有效的原資料庫題號 (1 - ${QUESTIONS_DATABASE.length})！`);
+            return;
+        }
+        const targetOrigIndex = origNum - 1;
+        const idx = gameState.questions.findIndex(q => q.originalIndex === targetOrigIndex);
+        if (idx !== -1) {
+            gameState.currentQuestionIndex = idx;
+            showDebugNotification(`F8: 已跳至原資料庫第 ${origNum} 題 (當前進度第 ${idx + 1} 題)`);
+            updateHUD();
+            loadQuestion();
+        } else {
+            alert(`在目前的試煉難度題庫中找不到原資料庫第 ${origNum} 題！\n（部分模式只會隨機抽選部分題目，請切換至「心臟聖甲蟲護身符」完整 50 題模式）`);
+        }
+    } else {
+        const num = parseInt(trimmed, 10);
+        if (isNaN(num) || num < 1 || num > maxQ) {
+            alert(`請輸入 1 到 ${maxQ} 之間的有效數字！`);
+            return;
+        }
+        gameState.currentQuestionIndex = num - 1;
+        showDebugNotification(`F8: 已跳轉至當前進度第 ${num} 題`);
+        updateHUD();
+        loadQuestion();
+    }
 }
 
 // ==========================================
@@ -851,6 +974,16 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+    // Screen transitions
+    document.getElementById("to-mode-screen-btn").addEventListener("click", () => {
+        goToModeScreen();
+    });
+
+    document.getElementById("back-to-entrance-btn").addEventListener("click", () => {
+        showScreen("entrance-screen");
+        Synth.playCoin();
+    });
+
     document.getElementById("start-game-btn").addEventListener("click", () => {
         initGame();
     });
@@ -865,5 +998,22 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("restart-btn").addEventListener("click", () => {
         Fireworks.stop(); // Stop fireworks animation
         showScreen("entrance-screen");
+    });
+
+    // Register developer debug hotkeys
+    window.addEventListener("keydown", (e) => {
+        if (e.key === "F2") {
+            e.preventDefault();
+            debugCorrectAnswer();
+        } else if (e.key === "F3") {
+            e.preventDefault();
+            toggleGodMode();
+        } else if (e.key === "F4") {
+            e.preventDefault();
+            debugInstantVictory();
+        } else if (e.key === "F8") {
+            e.preventDefault();
+            debugJumpToQuestion();
+        }
     });
 });
