@@ -753,11 +753,7 @@ function handleOptionClick(btn) {
     } else {
         Synth.playIncorrect();
         btn.classList.add("incorrect");
-        if (!gameState.godMode) {
-            gameState.hp--;
-        } else {
-            showDebugNotification("無敵模式：免扣火把！");
-        }
+        gameState.hp--;
         
         // Warning when low on torches (HP <= 40% of max HP)
         if (gameState.hp <= gameState.maxHp * 0.4) {
@@ -845,110 +841,6 @@ function showScreen(screenId) {
 }
 
 // ==========================================
-// Developer Debug Shortcuts & Notifications
-// ==========================================
-function showDebugNotification(text) {
-    console.log(text);
-    let toast = document.getElementById("debug-toast");
-    if (!toast) {
-        toast = document.createElement("div");
-        toast.id = "debug-toast";
-        toast.style.position = "fixed";
-        toast.style.bottom = "20px";
-        toast.style.left = "50%";
-        toast.style.transform = "translateX(-50%)";
-        toast.style.backgroundColor = "rgba(229, 169, 60, 0.95)";
-        toast.style.color = "#0a0806";
-        toast.style.padding = "10px 20px";
-        toast.style.borderRadius = "4px";
-        toast.style.fontFamily = "sans-serif";
-        toast.style.fontWeight = "bold";
-        toast.style.zIndex = "9999";
-        toast.style.boxShadow = "0 0 15px rgba(255, 215, 0, 0.6)";
-        toast.style.pointerEvents = "none";
-        toast.style.transition = "opacity 0.3s";
-        document.body.appendChild(toast);
-    }
-    toast.textContent = text;
-    toast.style.opacity = "1";
-    if (toast.timeoutId) clearTimeout(toast.timeoutId);
-    toast.timeoutId = setTimeout(() => {
-        toast.style.opacity = "0";
-    }, 1500);
-}
-
-function debugCorrectAnswer() {
-    if (gameState.isGameOver || !gameState.playerName || !gameState.questions || !gameState.questions.length) return;
-    const qIndex = gameState.currentQuestionIndex;
-    const q = gameState.questions[qIndex];
-    const correctAnswer = q.answer;
-    const optionButtons = document.querySelectorAll(".option-btn");
-    let targetBtn = null;
-    optionButtons.forEach(btn => {
-        if (btn.dataset.originalLetter === correctAnswer) {
-            targetBtn = btn;
-        }
-    });
-    if (targetBtn) {
-        showDebugNotification("F2: 自動選對！");
-        handleOptionClick(targetBtn);
-    }
-}
-
-function toggleGodMode() {
-    if (gameState.isGameOver || !gameState.playerName) return;
-    gameState.godMode = !gameState.godMode;
-    showDebugNotification("F3: 無敵模式 " + (gameState.godMode ? "開啟 🔥" : "關閉 ❌"));
-}
-
-function debugInstantVictory() {
-    if (gameState.isGameOver || !gameState.playerName) return;
-    showDebugNotification("F4: 瞬間通關！");
-    gameState.score = 100;
-    gameState.currentQuestionIndex = gameState.totalQuestions;
-    endGame(true, "victory");
-}
-
-function debugJumpToQuestion() {
-    if (gameState.isGameOver || !gameState.playerName || !gameState.questions || !gameState.questions.length) {
-        alert("請先開始遊戲再使用跳題功能！");
-        return;
-    }
-    const maxQ = gameState.totalQuestions;
-    const input = prompt(`請輸入要跳轉的當前進度題號 (1 - ${maxQ})，或輸入 # 加「原資料庫題號」（例如 #39）跳至特定題目：`);
-    if (input === null) return;
-    
-    const trimmed = input.trim();
-    if (trimmed.startsWith("#")) {
-        const origNum = parseInt(trimmed.substring(1), 10);
-        if (isNaN(origNum) || origNum < 1 || origNum > QUESTIONS_DATABASE.length) {
-            alert(`請輸入有效的原資料庫題號 (1 - ${QUESTIONS_DATABASE.length})！`);
-            return;
-        }
-        const targetOrigIndex = origNum - 1;
-        const idx = gameState.questions.findIndex(q => q.originalIndex === targetOrigIndex);
-        if (idx !== -1) {
-            gameState.currentQuestionIndex = idx;
-            showDebugNotification(`F8: 已跳至原資料庫第 ${origNum} 題 (當前進度第 ${idx + 1} 題)`);
-            updateHUD();
-            loadQuestion();
-        } else {
-            alert(`在目前的試煉難度題庫中找不到原資料庫第 ${origNum} 題！\n（部分模式只會隨機抽選部分題目，請切換至「心臟聖甲蟲護身符」完整 50 題模式）`);
-        }
-    } else {
-        const num = parseInt(trimmed, 10);
-        if (isNaN(num) || num < 1 || num > maxQ) {
-            alert(`請輸入 1 到 ${maxQ} 之間的有效數字！`);
-            return;
-        }
-        gameState.currentQuestionIndex = num - 1;
-        showDebugNotification(`F8: 已跳轉至當前進度第 ${num} 題`);
-        updateHUD();
-        loadQuestion();
-    }
-}
-
-// ==========================================
 // DOM Event Listeners & Startup
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
@@ -1000,20 +892,5 @@ document.addEventListener("DOMContentLoaded", () => {
         showScreen("entrance-screen");
     });
 
-    // Register developer debug hotkeys
-    window.addEventListener("keydown", (e) => {
-        if (e.key === "F2") {
-            e.preventDefault();
-            debugCorrectAnswer();
-        } else if (e.key === "F3") {
-            e.preventDefault();
-            toggleGodMode();
-        } else if (e.key === "F4") {
-            e.preventDefault();
-            debugInstantVictory();
-        } else if (e.key === "F8") {
-            e.preventDefault();
-            debugJumpToQuestion();
-        }
-    });
+
 });
